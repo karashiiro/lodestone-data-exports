@@ -1,0 +1,15 @@
+namespace FFXIV;
+
+table ItemTable (PrecompiledSerializer) {
+	Items:[Item] (SortedVector);
+}
+
+table Item (PrecompiledSerializer) {
+	Id:uint32 (key);
+	NameEn:string;
+	NameFr:string;
+	NameDe:string;
+	NameJa:string;
+}
+
+root_type ItemTable;
