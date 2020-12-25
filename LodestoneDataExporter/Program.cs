@@ -13,12 +13,59 @@ namespace LodestoneDataExporter
     {
         private const string OutputDir = "../../../../pack";
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var dataPath = args.Length > 0 ? args[0] : "C:/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack";
             var cyalume = new Cyalume(dataPath);
 
-            ExportItemTable(cyalume);
+            await Task.WhenAll(
+                Task.Run(() => ExportAchievementTable(cyalume)),
+                Task.Run(() => ExportItemTable(cyalume)),
+                Task.Run(() => ExportMinionTable(cyalume)),
+                Task.Run(() => ExportMountTable(cyalume)),
+                Task.Run(() => ExportTitleTable(cyalume))
+            );
+        }
+
+        private static void ExportAchievementTable(Cyalume cyalume)
+        {
+            var achievementTable = new AchievementTable { Achievements = new List<Achievement>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var achievementSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Achievement>(lang);
+                Parallel.ForEach(achievementSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, achievement =>
+                {
+                    Achievement curAchievement;
+                    lock (achievementTable.Achievements)
+                    {
+                        curAchievement = achievementTable.Achievements.FirstOrDefault(a => a.Id == achievement.RowId);
+                        if (curAchievement == null)
+                        {
+                            curAchievement = new Achievement { Id = achievement.RowId };
+                            achievementTable.Achievements.Add(curAchievement);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curAchievement.NameEn = achievement.Name;
+                            break;
+                        case Language.Japanese:
+                            curAchievement.NameJa = achievement.Name;
+                            break;
+                        case Language.German:
+                            curAchievement.NameDe = achievement.Name;
+                            break;
+                        case Language.French:
+                            curAchievement.NameFr = achievement.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "achievement_table.bin"), achievementTable);
         }
 
         private static void ExportItemTable(Cyalume cyalume)
@@ -62,6 +109,133 @@ namespace LodestoneDataExporter
             Serialize(Path.Join(OutputDir, "item_table.bin"), itemTable);
         }
 
+        private static void ExportMinionTable(Cyalume cyalume)
+        {
+            var minionTable = new MinionTable { Minions = new List<Minion>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var minionSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Companion>(lang);
+                Parallel.ForEach(minionSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, minion =>
+                {
+                    Minion curMinion;
+                    lock (minionTable.Minions)
+                    {
+                        curMinion = minionTable.Minions.FirstOrDefault(m => m.Id == minion.RowId);
+                        if (curMinion == null)
+                        {
+                            curMinion = new Minion { Id = minion.RowId };
+                            minionTable.Minions.Add(curMinion);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curMinion.NameEn = minion.Singular;
+                            break;
+                        case Language.Japanese:
+                            curMinion.NameJa = minion.Singular;
+                            break;
+                        case Language.German:
+                            curMinion.NameDe = minion.Singular;
+                            break;
+                        case Language.French:
+                            curMinion.NameFr = minion.Singular;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "minion_table.bin"), minionTable);
+        }
+
+        private static void ExportMountTable(Cyalume cyalume)
+        {
+            var mountTable = new MountTable { Mounts = new List<Mount>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var mountSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Mount>(lang);
+                Parallel.ForEach(mountSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, mount =>
+                {
+                    Mount curMount;
+                    lock (mountTable.Mounts)
+                    {
+                        curMount = mountTable.Mounts.FirstOrDefault(m => m.Id == mount.RowId);
+                        if (curMount == null)
+                        {
+                            curMount = new Mount { Id = mount.RowId };
+                            mountTable.Mounts.Add(curMount);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curMount.NameEn = mount.Singular;
+                            break;
+                        case Language.Japanese:
+                            curMount.NameJa = mount.Singular;
+                            break;
+                        case Language.German:
+                            curMount.NameDe = mount.Singular;
+                            break;
+                        case Language.French:
+                            curMount.NameFr = mount.Singular;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "mount_table.bin"), mountTable);
+        }
+
+        private static void ExportTitleTable(Cyalume cyalume)
+        {
+            var titleTable = new TitleTable { Titles = new List<Title>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var titleSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Title>(lang);
+                Parallel.ForEach(titleSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, title =>
+                {
+                    Title curTitle;
+                    lock (titleTable.Titles)
+                    {
+                        curTitle = titleTable.Titles.FirstOrDefault(t => t.Id == title.RowId);
+                        if (curTitle == null)
+                        {
+                            curTitle = new Title { Id = title.RowId, IsPrefix = title.IsPrefix};
+                            titleTable.Titles.Add(curTitle);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curTitle.NameMasculineEn = title.Masculine;
+                            curTitle.NameFeminineEn = title.Feminine;
+                            break;
+                        case Language.Japanese:
+                            curTitle.NameMasculineJa = title.Masculine;
+                            curTitle.NameFeminineJa = title.Feminine;
+                            break;
+                        case Language.German:
+                            curTitle.NameMasculineDe = title.Masculine;
+                            curTitle.NameFeminineDe = title.Feminine;
+                            break;
+                        case Language.French:
+                            curTitle.NameMasculineFr = title.Masculine;
+                            curTitle.NameFeminineFr = title.Feminine;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "title_table.bin"), titleTable);
+        }
+
         private static void Serialize<T>(string path, T obj) where T : class
         {
             var maxBytesNeeded = FlatBufferSerializer.Default.GetMaxSize(obj);
@@ -69,7 +243,6 @@ namespace LodestoneDataExporter
             var bytesWritten = FlatBufferSerializer.Default.Serialize(obj, buffer);
             var bytesToWrite = buffer[..bytesWritten];
             File.WriteAllBytes(path, bytesToWrite);
-            FlatBufferSerializer.Default.Parse<ItemTable>(bytesToWrite);
         }
     }
 }

@@ -1,0 +1,20 @@
+namespace FFXIV;
+
+table TitleTable (PrecompiledSerializer) {
+	Titles:[Title] (SortedVector);
+}
+
+table Title (PrecompiledSerializer) {
+	Id:uint32 (key);
+	IsPrefix:bool;
+	NameMasculineEn:string;
+	NameMasculineFr:string;
+	NameMasculineDe:string;
+	NameMasculineJa:string;
+	NameFeminineEn:string;
+	NameFeminineFr:string;
+	NameFeminineDe:string;
+	NameFeminineJa:string;
+}
+
+root_type TitleTable;

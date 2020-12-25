@@ -17,7 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FlatSharpSchema Include="../schema/AchievementTable.fbs" />
     <FlatSharpSchema Include="../schema/ItemTable.fbs" />
+    <FlatSharpSchema Include="../schema/MinionTable.fbs" />
+    <FlatSharpSchema Include="../schema/MountTable.fbs" />
+    <FlatSharpSchema Include="../schema/TitleTable.fbs" />
   </ItemGroup>
 
 </Project>
