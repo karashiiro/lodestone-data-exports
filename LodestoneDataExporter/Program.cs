@@ -19,11 +19,53 @@ namespace LodestoneDataExporter
             var cyalume = new Cyalume(dataPath);
 
             await Task.WhenAll(
+                Task.Run(() => ExportAchievementTable(cyalume)),
                 Task.Run(() => ExportItemTable(cyalume)),
                 Task.Run(() => ExportMinionTable(cyalume)),
                 Task.Run(() => ExportMountTable(cyalume)),
                 Task.Run(() => ExportTitleTable(cyalume))
             );
+        }
+
+        private static void ExportAchievementTable(Cyalume cyalume)
+        {
+            var itemTable = new AchievementTable { Achievements = new List<Achievement>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var achievementSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Achievement>(lang);
+                Parallel.ForEach(achievementSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, achievement =>
+                {
+                    Achievement curAchievement;
+                    lock (itemTable.Achievements)
+                    {
+                        curAchievement = itemTable.Achievements.FirstOrDefault(i => i.Id == achievement.RowId);
+                        if (curAchievement == null)
+                        {
+                            curAchievement = new Achievement { Id = achievement.RowId };
+                            itemTable.Achievements.Add(curAchievement);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curAchievement.NameEn = achievement.Name;
+                            break;
+                        case Language.Japanese:
+                            curAchievement.NameJa = achievement.Name;
+                            break;
+                        case Language.German:
+                            curAchievement.NameDe = achievement.Name;
+                            break;
+                        case Language.French:
+                            curAchievement.NameFr = achievement.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "achievement_table.bin"), itemTable);
         }
 
         private static void ExportItemTable(Cyalume cyalume)

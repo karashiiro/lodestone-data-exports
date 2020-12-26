@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LodestoneDataExporter", "Lo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schema", "Schema", "{59237D7B-95B4-463E-B621-8B33475C5B1F}"
 	ProjectSection(SolutionItems) = preProject
+		schema\AchievementTable.fbs = schema\AchievementTable.fbs
 		schema\ItemTable.fbs = schema\ItemTable.fbs
 		schema\MinionTable.fbs = schema\MinionTable.fbs
 		schema\MountTable.fbs = schema\MountTable.fbs
