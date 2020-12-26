@@ -1,10 +1,10 @@
 namespace FFXIV;
 
-table MountTable (PrecompiledSerializer) {
-	Mounts:[Mount] (SortedVector);
+table MountTable {
+	Mounts:[Mount];
 }
 
-table Mount (PrecompiledSerializer) {
+table Mount {
 	Id:uint32 (key);
 	NameEn:string;
 	NameFr:string;

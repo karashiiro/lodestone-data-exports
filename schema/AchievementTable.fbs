@@ -1,10 +1,10 @@
 namespace FFXIV;
 
-table AchievementTable (PrecompiledSerializer) {
-	Achievements:[Achievement] (SortedVector);
+table AchievementTable {
+	Achievements:[Achievement];
 }
 
-table Achievement (PrecompiledSerializer) {
+table Achievement {
 	Id:uint32 (key);
 	NameEn:string;
 	NameFr:string;

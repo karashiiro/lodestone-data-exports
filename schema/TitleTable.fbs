@@ -1,10 +1,10 @@
 namespace FFXIV;
 
-table TitleTable (PrecompiledSerializer) {
-	Titles:[Title] (SortedVector);
+table TitleTable {
+	Titles:[Title];
 }
 
-table Title (PrecompiledSerializer) {
+table Title {
 	Id:uint32 (key);
 	IsPrefix:bool;
 	NameMasculineEn:string;

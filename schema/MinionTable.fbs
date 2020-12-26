@@ -1,10 +1,10 @@
 namespace FFXIV;
 
-table MinionTable (PrecompiledSerializer) {
-	Minions:[Minion] (SortedVector);
+table MinionTable {
+	Minions:[Minion];
 }
 
-table Minion (PrecompiledSerializer) {
+table Minion {
 	Id:uint32 (key);
 	NameEn:string;
 	NameFr:string;

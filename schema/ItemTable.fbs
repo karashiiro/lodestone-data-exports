@@ -1,10 +1,10 @@
 namespace FFXIV;
 
-table ItemTable (PrecompiledSerializer) {
-	Items:[Item] (SortedVector);
+table ItemTable {
+	Items:[Item];
 }
 
-table Item (PrecompiledSerializer) {
+table Item {
 	Id:uint32 (key);
 	NameEn:string;
 	NameFr:string;
