@@ -1,0 +1,15 @@
+namespace FFXIV;
+
+table ClassJobTable {
+	ClassJobs:[ClassJob];
+}
+
+table ClassJob {
+	Id:uint32 (key);
+	NameEn:string;
+	NameFr:string;
+	NameDe:string;
+	NameJa:string;
+}
+
+root_type ClassJobTable;

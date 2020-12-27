@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <FlatSharpSchema Include="../schema/AchievementTable.fbs" />
+    <FlatSharpSchema Include="../schema/ClassJobTable.fbs" />
     <FlatSharpSchema Include="../schema/DeityTable.fbs" />
     <FlatSharpSchema Include="../schema/GrandCompanyTable.fbs" />
     <FlatSharpSchema Include="../schema/ItemTable.fbs" />

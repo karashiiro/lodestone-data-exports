@@ -20,9 +20,9 @@ namespace LodestoneDataExporter
 
             await Task.WhenAll(
                 Task.Run(() => ExportAchievementTable(cyalume)),
+                Task.Run(() => ExportClassJobTable(cyalume)),
                 Task.Run(() => ExportGuardianDeityTable(cyalume)),
                 Task.Run(() => ExportGrandCompanyTable(cyalume)),
-                Task.Run(() => ExportItemTable(cyalume)),
                 Task.Run(() => ExportMinionTable(cyalume)),
                 Task.Run(() => ExportMountTable(cyalume)),
                 Task.Run(() => ExportRaceTable(cyalume)),
@@ -30,6 +30,8 @@ namespace LodestoneDataExporter
                 Task.Run(() => ExportTownTable(cyalume)),
                 Task.Run(() => ExportTribeTable(cyalume))
             );
+
+            ExportItemTable(cyalume); // Lumping this with the others causes stream depletions somehow.
         }
 
         private static void ExportAchievementTable(Cyalume cyalume)
@@ -71,6 +73,47 @@ namespace LodestoneDataExporter
             }
 
             Serialize(Path.Join(OutputDir, "achievement_table.bin"), itemTable);
+        }
+
+        private static void ExportClassJobTable(Cyalume cyalume)
+        {
+            var classJobTable = new ClassJobTable { ClassJobs = new List<ClassJob>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var classJobSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.ClassJob>(lang);
+                Parallel.ForEach(classJobSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, classJob =>
+                {
+                    ClassJob curClassJob;
+                    lock (classJobTable.ClassJobs)
+                    {
+                        curClassJob = classJobTable.ClassJobs.FirstOrDefault(cj => cj.Id == classJob.RowId);
+                        if (curClassJob == null)
+                        {
+                            curClassJob = new ClassJob { Id = classJob.RowId };
+                            classJobTable.ClassJobs.Add(curClassJob);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curClassJob.NameEn = classJob.Name;
+                            break;
+                        case Language.Japanese:
+                            curClassJob.NameJa = classJob.Name;
+                            break;
+                        case Language.German:
+                            curClassJob.NameDe = classJob.Name;
+                            break;
+                        case Language.French:
+                            curClassJob.NameFr = classJob.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "classjob_table.bin"), classJobTable);
         }
 
         private static void ExportGuardianDeityTable(Cyalume cyalume)
