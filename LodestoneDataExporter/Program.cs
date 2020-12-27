@@ -417,7 +417,7 @@ namespace LodestoneDataExporter
             var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
             foreach (var lang in languages)
             {
-                var townSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Item>(lang);
+                var townSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Town>(lang);
                 Parallel.ForEach(townSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, town =>
                 {
                     Town curTown;
