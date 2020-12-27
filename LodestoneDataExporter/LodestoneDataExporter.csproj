@@ -18,10 +18,14 @@
 
   <ItemGroup>
     <FlatSharpSchema Include="../schema/AchievementTable.fbs" />
+    <FlatSharpSchema Include="../schema/DeityTable.fbs" />
+    <FlatSharpSchema Include="../schema/GrandCompanyTable.fbs" />
     <FlatSharpSchema Include="../schema/ItemTable.fbs" />
     <FlatSharpSchema Include="../schema/MinionTable.fbs" />
     <FlatSharpSchema Include="../schema/MountTable.fbs" />
+    <FlatSharpSchema Include="../schema/RaceTable.fbs" />
     <FlatSharpSchema Include="../schema/TitleTable.fbs" />
+    <FlatSharpSchema Include="../schema/TribeTable.fbs" />
   </ItemGroup>
 
 </Project>

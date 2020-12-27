@@ -20,10 +20,14 @@ namespace LodestoneDataExporter
 
             await Task.WhenAll(
                 Task.Run(() => ExportAchievementTable(cyalume)),
+                Task.Run(() => ExportGuardianDeityTable(cyalume)),
+                Task.Run(() => ExportGrandCompanyTable(cyalume)),
                 Task.Run(() => ExportItemTable(cyalume)),
                 Task.Run(() => ExportMinionTable(cyalume)),
                 Task.Run(() => ExportMountTable(cyalume)),
-                Task.Run(() => ExportTitleTable(cyalume))
+                Task.Run(() => ExportRaceTable(cyalume)),
+                Task.Run(() => ExportTitleTable(cyalume)),
+                Task.Run(() => ExportTribeTable(cyalume))
             );
         }
 
@@ -66,6 +70,88 @@ namespace LodestoneDataExporter
             }
 
             Serialize(Path.Join(OutputDir, "achievement_table.bin"), itemTable);
+        }
+
+        private static void ExportGuardianDeityTable(Cyalume cyalume)
+        {
+            var deityTable = new DeityTable { Deities = new List<Deity>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var deitySheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.GuardianDeity>(lang);
+                Parallel.ForEach(deitySheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, deity =>
+                {
+                    Deity curDeity;
+                    lock (deityTable.Deities)
+                    {
+                        curDeity = deityTable.Deities.FirstOrDefault(d => d.Id == deity.RowId);
+                        if (curDeity == null)
+                        {
+                            curDeity = new Deity { Id = deity.RowId };
+                            deityTable.Deities.Add(curDeity);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curDeity.NameEn = deity.Name;
+                            break;
+                        case Language.Japanese:
+                            curDeity.NameJa = deity.Name;
+                            break;
+                        case Language.German:
+                            curDeity.NameDe = deity.Name;
+                            break;
+                        case Language.French:
+                            curDeity.NameFr = deity.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "deity_table.bin"), deityTable);
+        }
+
+        private static void ExportGrandCompanyTable(Cyalume cyalume)
+        {
+            var gcTable = new GrandCompanyTable { GrandCompanies = new List<GrandCompany>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var gcSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.GrandCompany>(lang);
+                Parallel.ForEach(gcSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, gc =>
+                {
+                    GrandCompany curGc;
+                    lock (gcTable.GrandCompanies)
+                    {
+                        curGc = gcTable.GrandCompanies.FirstOrDefault(c => c.Id == gc.RowId);
+                        if (curGc == null)
+                        {
+                            curGc = new GrandCompany { Id = gc.RowId };
+                            gcTable.GrandCompanies.Add(curGc);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curGc.NameEn = gc.Name;
+                            break;
+                        case Language.Japanese:
+                            curGc.NameJa = gc.Name;
+                            break;
+                        case Language.German:
+                            curGc.NameDe = gc.Name;
+                            break;
+                        case Language.French:
+                            curGc.NameFr = gc.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "gc_table.bin"), gcTable);
         }
 
         private static void ExportItemTable(Cyalume cyalume)
@@ -191,6 +277,47 @@ namespace LodestoneDataExporter
             Serialize(Path.Join(OutputDir, "mount_table.bin"), mountTable);
         }
 
+        private static void ExportRaceTable(Cyalume cyalume)
+        {
+            var raceTable = new RaceTable { Races = new List<Race>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var raceSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Race>(lang);
+                Parallel.ForEach(raceSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, race =>
+                {
+                    Race curRace;
+                    lock (raceTable.Races)
+                    {
+                        curRace = raceTable.Races.FirstOrDefault(r => r.Id == race.RowId);
+                        if (curRace == null)
+                        {
+                            curRace = new Race { Id = race.RowId };
+                            raceTable.Races.Add(curRace);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curRace.NameEn = race.Masculine; // There don't seem to be any gendered differences in the strings
+                            break;
+                        case Language.Japanese:
+                            curRace.NameJa = race.Masculine;
+                            break;
+                        case Language.German:
+                            curRace.NameDe = race.Masculine;
+                            break;
+                        case Language.French:
+                            curRace.NameFr = race.Masculine;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "race_table.bin"), raceTable);
+        }
+
         private static void ExportTitleTable(Cyalume cyalume)
         {
             var titleTable = new TitleTable { Titles = new List<Title>() };
@@ -234,6 +361,47 @@ namespace LodestoneDataExporter
             }
 
             Serialize(Path.Join(OutputDir, "title_table.bin"), titleTable);
+        }
+
+        private static void ExportTribeTable(Cyalume cyalume)
+        {
+            var tribeTable = new TribeTable { Tribes = new List<Tribe>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var tribeSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Tribe>(lang);
+                Parallel.ForEach(tribeSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, tribe =>
+                {
+                    Tribe curTribe;
+                    lock (tribeTable.Tribes)
+                    {
+                        curTribe = tribeTable.Tribes.FirstOrDefault(t => t.Id == tribe.RowId);
+                        if (curTribe == null)
+                        {
+                            curTribe = new Tribe { Id = tribe.RowId };
+                            tribeTable.Tribes.Add(curTribe);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curTribe.NameEn = tribe.Masculine; // Doesn't seem to be any differences
+                            break;
+                        case Language.Japanese:
+                            curTribe.NameJa = tribe.Masculine;
+                            break;
+                        case Language.German:
+                            curTribe.NameDe = tribe.Masculine;
+                            break;
+                        case Language.French:
+                            curTribe.NameFr = tribe.Masculine;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "tribe_table.bin"), tribeTable);
         }
 
         private static void Serialize<T>(string path, T obj) where T : class

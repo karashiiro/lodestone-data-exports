@@ -1,0 +1,15 @@
+namespace FFXIV;
+
+table TribeTable {
+	Tribes:[Tribe];
+}
+
+table Tribe {
+	Id:uint32 (key);
+	NameEn:string;
+	NameFr:string;
+	NameDe:string;
+	NameJa:string;
+}
+
+root_type TribeTable;

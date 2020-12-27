@@ -8,10 +8,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schema", "Schema", "{59237D7B-95B4-463E-B621-8B33475C5B1F}"
 	ProjectSection(SolutionItems) = preProject
 		schema\AchievementTable.fbs = schema\AchievementTable.fbs
+		schema\DeityTable.fbs = schema\DeityTable.fbs
+		schema\GrandCompanyTable.fbs = schema\GrandCompanyTable.fbs
 		schema\ItemTable.fbs = schema\ItemTable.fbs
 		schema\MinionTable.fbs = schema\MinionTable.fbs
 		schema\MountTable.fbs = schema\MountTable.fbs
+		schema\RaceTable.fbs = schema\RaceTable.fbs
 		schema\TitleTable.fbs = schema\TitleTable.fbs
+		schema\TribeTable.fbs = schema\TribeTable.fbs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{13C20868-3AFF-4DEA-8F7D-C12597CDD985}"

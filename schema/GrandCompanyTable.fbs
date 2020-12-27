@@ -1,0 +1,15 @@
+namespace FFXIV;
+
+table GrandCompanyTable {
+	GrandCompanies:[GrandCompany];
+}
+
+table GrandCompany {
+	Id:uint32 (key);
+	NameEn:string;
+	NameFr:string;
+	NameDe:string;
+	NameJa:string;
+}
+
+root_type GrandCompanyTable;
