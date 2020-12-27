@@ -345,19 +345,19 @@ namespace LodestoneDataExporter
                     {
                         case Language.English:
                             curRace.NameMasculineEn = race.Masculine;
-                            curRace.NameFeminineEn = race.Masculine;
+                            curRace.NameFeminineEn = race.Feminine;
                             break;
                         case Language.Japanese:
                             curRace.NameMasculineJa = race.Masculine;
-                            curRace.NameFeminineJa = race.Masculine;
+                            curRace.NameFeminineJa = race.Feminine;
                             break;
                         case Language.German:
                             curRace.NameMasculineDe = race.Masculine;
-                            curRace.NameFeminineDe = race.Masculine;
+                            curRace.NameFeminineDe = race.Feminine;
                             break;
                         case Language.French:
                             curRace.NameMasculineFr = race.Masculine;
-                            curRace.NameFeminineFr = race.Masculine;
+                            curRace.NameFeminineFr = race.Feminine;
                             break;
                     }
                 });
@@ -476,19 +476,19 @@ namespace LodestoneDataExporter
                     {
                         case Language.English:
                             curTribe.NameMasculineEn = tribe.Masculine;
-                            curTribe.NameFeminineEn = tribe.Masculine;
+                            curTribe.NameFeminineEn = tribe.Feminine;
                             break;
                         case Language.Japanese:
                             curTribe.NameMasculineJa = tribe.Masculine;
-                            curTribe.NameFeminineJa = tribe.Masculine;
+                            curTribe.NameFeminineJa = tribe.Feminine;
                             break;
                         case Language.German:
                             curTribe.NameMasculineDe = tribe.Masculine;
-                            curTribe.NameFeminineDe = tribe.Masculine;
+                            curTribe.NameFeminineDe = tribe.Feminine;
                             break;
                         case Language.French:
                             curTribe.NameMasculineFr = tribe.Masculine;
-                            curTribe.NameFeminineFr = tribe.Masculine;
+                            curTribe.NameFeminineFr = tribe.Feminine;
                             break;
                     }
                 });
