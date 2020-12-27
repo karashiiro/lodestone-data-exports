@@ -25,6 +25,7 @@
     <FlatSharpSchema Include="../schema/MountTable.fbs" />
     <FlatSharpSchema Include="../schema/RaceTable.fbs" />
     <FlatSharpSchema Include="../schema/TitleTable.fbs" />
+    <FlatSharpSchema Include="../schema/TownTable.fbs" />
     <FlatSharpSchema Include="../schema/TribeTable.fbs" />
   </ItemGroup>
 

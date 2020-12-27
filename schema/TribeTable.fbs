@@ -6,10 +6,14 @@ table TribeTable {
 
 table Tribe {
 	Id:uint32 (key);
-	NameEn:string;
-	NameFr:string;
-	NameDe:string;
-	NameJa:string;
+	NameMasculineEn:string;
+	NameMasculineFr:string;
+	NameMasculineDe:string;
+	NameMasculineJa:string;
+	NameFeminineEn:string;
+	NameFeminineFr:string;
+	NameFeminineDe:string;
+	NameFeminineJa:string;
 }
 
 root_type TribeTable;

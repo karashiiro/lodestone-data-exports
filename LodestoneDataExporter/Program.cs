@@ -27,6 +27,7 @@ namespace LodestoneDataExporter
                 Task.Run(() => ExportMountTable(cyalume)),
                 Task.Run(() => ExportRaceTable(cyalume)),
                 Task.Run(() => ExportTitleTable(cyalume)),
+                Task.Run(() => ExportTownTable(cyalume)),
                 Task.Run(() => ExportTribeTable(cyalume))
             );
         }
@@ -300,16 +301,20 @@ namespace LodestoneDataExporter
                     switch (lang)
                     {
                         case Language.English:
-                            curRace.NameEn = race.Masculine; // There don't seem to be any gendered differences in the strings
+                            curRace.NameMasculineEn = race.Masculine;
+                            curRace.NameFeminineEn = race.Masculine;
                             break;
                         case Language.Japanese:
-                            curRace.NameJa = race.Masculine;
+                            curRace.NameMasculineJa = race.Masculine;
+                            curRace.NameFeminineJa = race.Masculine;
                             break;
                         case Language.German:
-                            curRace.NameDe = race.Masculine;
+                            curRace.NameMasculineDe = race.Masculine;
+                            curRace.NameFeminineDe = race.Masculine;
                             break;
                         case Language.French:
-                            curRace.NameFr = race.Masculine;
+                            curRace.NameMasculineFr = race.Masculine;
+                            curRace.NameFeminineFr = race.Masculine;
                             break;
                     }
                 });
@@ -363,6 +368,47 @@ namespace LodestoneDataExporter
             Serialize(Path.Join(OutputDir, "title_table.bin"), titleTable);
         }
 
+        private static void ExportTownTable(Cyalume cyalume)
+        {
+            var townTable = new TownTable { Towns = new List<Town>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var townSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Item>(lang);
+                Parallel.ForEach(townSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, town =>
+                {
+                    Town curTown;
+                    lock (townTable.Towns)
+                    {
+                        curTown = townTable.Towns.FirstOrDefault(t => t.Id == town.RowId);
+                        if (curTown == null)
+                        {
+                            curTown = new Town { Id = town.RowId };
+                            townTable.Towns.Add(curTown);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curTown.NameEn = town.Name;
+                            break;
+                        case Language.Japanese:
+                            curTown.NameJa = town.Name;
+                            break;
+                        case Language.German:
+                            curTown.NameDe = town.Name;
+                            break;
+                        case Language.French:
+                            curTown.NameFr = town.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "town_table.bin"), townTable);
+        }
+
         private static void ExportTribeTable(Cyalume cyalume)
         {
             var tribeTable = new TribeTable { Tribes = new List<Tribe>() };
@@ -386,16 +432,20 @@ namespace LodestoneDataExporter
                     switch (lang)
                     {
                         case Language.English:
-                            curTribe.NameEn = tribe.Masculine; // Doesn't seem to be any differences
+                            curTribe.NameMasculineEn = tribe.Masculine;
+                            curTribe.NameFeminineEn = tribe.Masculine;
                             break;
                         case Language.Japanese:
-                            curTribe.NameJa = tribe.Masculine;
+                            curTribe.NameMasculineJa = tribe.Masculine;
+                            curTribe.NameFeminineJa = tribe.Masculine;
                             break;
                         case Language.German:
-                            curTribe.NameDe = tribe.Masculine;
+                            curTribe.NameMasculineDe = tribe.Masculine;
+                            curTribe.NameFeminineDe = tribe.Masculine;
                             break;
                         case Language.French:
-                            curTribe.NameFr = tribe.Masculine;
+                            curTribe.NameMasculineFr = tribe.Masculine;
+                            curTribe.NameFeminineFr = tribe.Masculine;
                             break;
                     }
                 });
