@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schema", "Schema", "{59237D
 		schema\MinionTable.fbs = schema\MinionTable.fbs
 		schema\MountTable.fbs = schema\MountTable.fbs
 		schema\RaceTable.fbs = schema\RaceTable.fbs
+		schema\ReputationTable.fbs = schema\ReputationTable.fbs
 		schema\TitleTable.fbs = schema\TitleTable.fbs
 		schema\TownTable.fbs = schema\TownTable.fbs
 		schema\TribeTable.fbs = schema\TribeTable.fbs

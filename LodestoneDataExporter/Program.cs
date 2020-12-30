@@ -26,6 +26,7 @@ namespace LodestoneDataExporter
                 Task.Run(() => ExportMinionTable(cyalume)),
                 Task.Run(() => ExportMountTable(cyalume)),
                 Task.Run(() => ExportRaceTable(cyalume)),
+                Task.Run(() => ExportReputationTable(cyalume)),
                 Task.Run(() => ExportTitleTable(cyalume)),
                 Task.Run(() => ExportTownTable(cyalume)),
                 Task.Run(() => ExportTribeTable(cyalume))
@@ -364,6 +365,47 @@ namespace LodestoneDataExporter
             }
 
             Serialize(Path.Join(OutputDir, "race_table.bin"), raceTable);
+        }
+
+        private static void ExportReputationTable(Cyalume cyalume)
+        {
+            var repTable = new ReputationTable { Reputations = new List<Reputation>() };
+            var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
+            foreach (var lang in languages)
+            {
+                var repSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.BeastReputationRank>(lang);
+                Parallel.ForEach(repSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, rep =>
+                {
+                    Reputation curRep;
+                    lock (repTable.Reputations)
+                    {
+                        curRep = repTable.Reputations.FirstOrDefault(r => r.Id == rep.RowId);
+                        if (curRep == null)
+                        {
+                            curRep = new Reputation { Id = rep.RowId };
+                            repTable.Reputations.Add(curRep);
+                        }
+                    }
+
+                    switch (lang)
+                    {
+                        case Language.English:
+                            curRep.NameEn = rep.Name;
+                            break;
+                        case Language.Japanese:
+                            curRep.NameJa = rep.Name;
+                            break;
+                        case Language.German:
+                            curRep.NameDe = rep.Name;
+                            break;
+                        case Language.French:
+                            curRep.NameFr = rep.Name;
+                            break;
+                    }
+                });
+            }
+
+            Serialize(Path.Join(OutputDir, "reputation_table.bin"), repTable);
         }
 
         private static void ExportTitleTable(Cyalume cyalume)
