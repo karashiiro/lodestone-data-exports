@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Lumina;
 using Cyalume = Lumina.GameData;
 
 namespace LodestoneDataExporter
@@ -16,7 +17,7 @@ namespace LodestoneDataExporter
         public static async Task Main(string[] args)
         {
             var dataPath = args.Length > 0 ? args[0] : "C:/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack";
-            var cyalume = new Cyalume(dataPath);
+            var cyalume = new Cyalume(dataPath, new LuminaOptions { PanicOnSheetChecksumMismatch = false });
 
             await Task.WhenAll(
                 Task.Run(() => ExportAchievementTable(cyalume)),
