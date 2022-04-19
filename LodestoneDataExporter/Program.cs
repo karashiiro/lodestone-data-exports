@@ -88,7 +88,7 @@ namespace LodestoneDataExporter
                     var curClassJob = classJobTable.ClassJobs.FirstOrDefault(cj => cj.Id == classJob.RowId);
                     if (curClassJob == null)
                     {
-                        curClassJob = new ClassJob { Id = classJob.RowId, JobIndex = classJob.JobIndex };
+                        curClassJob = new ClassJob { Id = classJob.RowId, Parent = classJob.ClassJobParent.Row, JobIndex = classJob.JobIndex };
                         classJobTable.ClassJobs.Add(curClassJob);
                     }
 
