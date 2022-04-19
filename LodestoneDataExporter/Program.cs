@@ -1,11 +1,11 @@
 ﻿using FFXIV;
 using FlatSharp;
+using Lumina;
 using Lumina.Data;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Lumina;
 using Cyalume = Lumina.GameData;
 
 namespace LodestoneDataExporter
@@ -30,10 +30,9 @@ namespace LodestoneDataExporter
                 Task.Run(() => ExportReputationTable(cyalume)),
                 Task.Run(() => ExportTitleTable(cyalume)),
                 Task.Run(() => ExportTownTable(cyalume)),
-                Task.Run(() => ExportTribeTable(cyalume))
+                Task.Run(() => ExportTribeTable(cyalume)),
+                Task.Run(() => ExportItemTable(cyalume))
             );
-
-            ExportItemTable(cyalume); // Lumping this with the others causes stream depletions somehow.
         }
 
         private static void ExportAchievementTable(Cyalume cyalume)
@@ -84,17 +83,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var classJobSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.ClassJob>(lang);
-                Parallel.ForEach(classJobSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, classJob =>
+                foreach (var classJob in classJobSheet)
                 {
-                    ClassJob curClassJob;
-                    lock (classJobTable.ClassJobs)
+                    var curClassJob = classJobTable.ClassJobs.FirstOrDefault(cj => cj.Id == classJob.RowId);
+                    if (curClassJob == null)
                     {
-                        curClassJob = classJobTable.ClassJobs.FirstOrDefault(cj => cj.Id == classJob.RowId);
-                        if (curClassJob == null)
-                        {
-                            curClassJob = new ClassJob { Id = classJob.RowId };
-                            classJobTable.ClassJobs.Add(curClassJob);
-                        }
+                        curClassJob = new ClassJob { Id = classJob.RowId, JobIndex = classJob.JobIndex };
+                        classJobTable.ClassJobs.Add(curClassJob);
                     }
 
                     switch (lang)
@@ -112,7 +107,7 @@ namespace LodestoneDataExporter
                             curClassJob.NameFr = classJob.Name;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "classjob_table.bin"), classJobTable);
@@ -125,17 +120,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var deitySheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.GuardianDeity>(lang);
-                Parallel.ForEach(deitySheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, deity =>
+                foreach (var deity in deitySheet)
                 {
-                    Deity curDeity;
-                    lock (deityTable.Deities)
+                    var curDeity = deityTable.Deities.FirstOrDefault(d => d.Id == deity.RowId);
+                    if (curDeity == null)
                     {
-                        curDeity = deityTable.Deities.FirstOrDefault(d => d.Id == deity.RowId);
-                        if (curDeity == null)
-                        {
-                            curDeity = new Deity { Id = deity.RowId };
-                            deityTable.Deities.Add(curDeity);
-                        }
+                        curDeity = new Deity { Id = deity.RowId };
+                        deityTable.Deities.Add(curDeity);
                     }
 
                     switch (lang)
@@ -153,7 +144,7 @@ namespace LodestoneDataExporter
                             curDeity.NameFr = deity.Name;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "deity_table.bin"), deityTable);
@@ -166,17 +157,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var gcSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.GrandCompany>(lang);
-                Parallel.ForEach(gcSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, gc =>
+                foreach (var gc in gcSheet)
                 {
-                    GrandCompany curGc;
-                    lock (gcTable.GrandCompanies)
+                    var curGc = gcTable.GrandCompanies.FirstOrDefault(c => c.Id == gc.RowId);
+                    if (curGc == null)
                     {
-                        curGc = gcTable.GrandCompanies.FirstOrDefault(c => c.Id == gc.RowId);
-                        if (curGc == null)
-                        {
-                            curGc = new GrandCompany { Id = gc.RowId };
-                            gcTable.GrandCompanies.Add(curGc);
-                        }
+                        curGc = new GrandCompany { Id = gc.RowId };
+                        gcTable.GrandCompanies.Add(curGc);
                     }
 
                     switch (lang)
@@ -194,7 +181,7 @@ namespace LodestoneDataExporter
                             curGc.NameFr = gc.Name;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "gc_table.bin"), gcTable);
@@ -202,40 +189,40 @@ namespace LodestoneDataExporter
 
         private static void ExportItemTable(Cyalume cyalume)
         {
-            var itemTable = new ItemTable {Items = new List<Item>()};
+            var itemTable = new ItemTable { Items = new List<Item>() };
             var languages = new[] { Language.English, Language.Japanese, Language.German, Language.French };
             foreach (var lang in languages)
             {
                 var itemSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Item>(lang);
-                Parallel.ForEach(itemSheet, new ParallelOptions{MaxDegreeOfParallelism = 4}, item =>
-                {
-                    Item curItem;
-                    lock (itemTable.Items)
-                    {
-                        curItem = itemTable.Items.FirstOrDefault(i => i.Id == item.RowId);
-                        if (curItem == null)
-                        {
-                            curItem = new Item {Id = item.RowId};
-                            itemTable.Items.Add(curItem);
-                        }
-                    }
+                Parallel.ForEach(itemSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, item =>
+                   {
+                       Item curItem;
+                       lock (itemTable.Items)
+                       {
+                           curItem = itemTable.Items.FirstOrDefault(i => i.Id == item.RowId);
+                           if (curItem == null)
+                           {
+                               curItem = new Item { Id = item.RowId };
+                               itemTable.Items.Add(curItem);
+                           }
+                       }
 
-                    switch (lang)
-                    {
-                        case Language.English:
-                            curItem.NameEn = item.Name;
-                            break;
-                        case Language.Japanese:
-                            curItem.NameJa = item.Name;
-                            break;
-                        case Language.German:
-                            curItem.NameDe = item.Name;
-                            break;
-                        case Language.French:
-                            curItem.NameFr = item.Name;
-                            break;
-                    }
-                });
+                       switch (lang)
+                       {
+                           case Language.English:
+                               curItem.NameEn = item.Name;
+                               break;
+                           case Language.Japanese:
+                               curItem.NameJa = item.Name;
+                               break;
+                           case Language.German:
+                               curItem.NameDe = item.Name;
+                               break;
+                           case Language.French:
+                               curItem.NameFr = item.Name;
+                               break;
+                       }
+                   });
             }
 
             Serialize(Path.Join(OutputDir, "item_table.bin"), itemTable);
@@ -330,17 +317,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var raceSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Race>(lang);
-                Parallel.ForEach(raceSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, race =>
+                foreach (var race in raceSheet)
                 {
-                    Race curRace;
-                    lock (raceTable.Races)
+                    var curRace = raceTable.Races.FirstOrDefault(r => r.Id == race.RowId);
+                    if (curRace == null)
                     {
-                        curRace = raceTable.Races.FirstOrDefault(r => r.Id == race.RowId);
-                        if (curRace == null)
-                        {
-                            curRace = new Race { Id = race.RowId };
-                            raceTable.Races.Add(curRace);
-                        }
+                        curRace = new Race { Id = race.RowId };
+                        raceTable.Races.Add(curRace);
                     }
 
                     switch (lang)
@@ -362,7 +345,7 @@ namespace LodestoneDataExporter
                             curRace.NameFeminineFr = race.Feminine;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "race_table.bin"), raceTable);
@@ -375,17 +358,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var repSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.BeastReputationRank>(lang);
-                Parallel.ForEach(repSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, rep =>
+                foreach (var rep in repSheet)
                 {
-                    Reputation curRep;
-                    lock (repTable.Reputations)
+                    var curRep = repTable.Reputations.FirstOrDefault(r => r.Id == rep.RowId);
+                    if (curRep == null)
                     {
-                        curRep = repTable.Reputations.FirstOrDefault(r => r.Id == rep.RowId);
-                        if (curRep == null)
-                        {
-                            curRep = new Reputation { Id = rep.RowId };
-                            repTable.Reputations.Add(curRep);
-                        }
+                        curRep = new Reputation { Id = rep.RowId };
+                        repTable.Reputations.Add(curRep);
                     }
 
                     switch (lang)
@@ -403,7 +382,7 @@ namespace LodestoneDataExporter
                             curRep.NameFr = rep.Name;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "reputation_table.bin"), repTable);
@@ -424,7 +403,7 @@ namespace LodestoneDataExporter
                         curTitle = titleTable.Titles.FirstOrDefault(t => t.Id == title.RowId);
                         if (curTitle == null)
                         {
-                            curTitle = new Title { Id = title.RowId, IsPrefix = title.IsPrefix};
+                            curTitle = new Title { Id = title.RowId, IsPrefix = title.IsPrefix };
                             titleTable.Titles.Add(curTitle);
                         }
                     }
@@ -461,17 +440,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var townSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Town>(lang);
-                Parallel.ForEach(townSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, town =>
+                foreach (var town in townSheet)
                 {
-                    Town curTown;
-                    lock (townTable.Towns)
+                    var curTown = townTable.Towns.FirstOrDefault(t => t.Id == town.RowId);
+                    if (curTown == null)
                     {
-                        curTown = townTable.Towns.FirstOrDefault(t => t.Id == town.RowId);
-                        if (curTown == null)
-                        {
-                            curTown = new Town { Id = town.RowId };
-                            townTable.Towns.Add(curTown);
-                        }
+                        curTown = new Town { Id = town.RowId };
+                        townTable.Towns.Add(curTown);
                     }
 
                     switch (lang)
@@ -489,7 +464,7 @@ namespace LodestoneDataExporter
                             curTown.NameFr = town.Name;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "town_table.bin"), townTable);
@@ -502,17 +477,13 @@ namespace LodestoneDataExporter
             foreach (var lang in languages)
             {
                 var tribeSheet = cyalume.GetExcelSheet<Lumina.Excel.GeneratedSheets.Tribe>(lang);
-                Parallel.ForEach(tribeSheet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, tribe =>
+                foreach (var tribe in tribeSheet)
                 {
-                    Tribe curTribe;
-                    lock (tribeTable.Tribes)
+                    var curTribe = tribeTable.Tribes.FirstOrDefault(t => t.Id == tribe.RowId);
+                    if (curTribe == null)
                     {
-                        curTribe = tribeTable.Tribes.FirstOrDefault(t => t.Id == tribe.RowId);
-                        if (curTribe == null)
-                        {
-                            curTribe = new Tribe { Id = tribe.RowId };
-                            tribeTable.Tribes.Add(curTribe);
-                        }
+                        curTribe = new Tribe { Id = tribe.RowId };
+                        tribeTable.Tribes.Add(curTribe);
                     }
 
                     switch (lang)
@@ -534,7 +505,7 @@ namespace LodestoneDataExporter
                             curTribe.NameFeminineFr = tribe.Feminine;
                             break;
                     }
-                });
+                }
             }
 
             Serialize(Path.Join(OutputDir, "tribe_table.bin"), tribeTable);

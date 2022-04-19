@@ -6,6 +6,7 @@ table ClassJobTable {
 
 table ClassJob {
 	Id:uint32 (key);
+	JobIndex:uint32;
 	NameEn:string;
 	NameFr:string;
 	NameDe:string;
