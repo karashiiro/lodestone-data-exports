@@ -13,7 +13,7 @@
     </PackageReference>
     <PackageReference Include="FlatSharp.Runtime" Version="6.2.1" />
     <PackageReference Include="Lumina" Version="3.10.0" />
-    <PackageReference Include="Lumina.Excel" Version="6.2.1" />
+    <PackageReference Include="Lumina.Excel" Version="6.3.2" />
   </ItemGroup>
 
   <ItemGroup>
